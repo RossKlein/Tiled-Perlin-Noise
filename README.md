@@ -18,8 +18,8 @@ Alternatively
 
 Once open the WASD keys will move a small dot around the screen.
 
-### Watch the demo!!!
-![Oops! see demo]([DEMO.mp4](https://github.com/RossKlein/Tiled-Perlin-Noise/assets/11377562/92541319-dd42-4866-990c-9a10746002c4)https://github.com/RossKlein/Tiled-Perlin-Noise/assets/11377562/92541319-dd42-4866-990c-9a10746002c4)
+## Watch the demo!!!
+![see demo](https://github.com/RossKlein/Tiled-Perlin-Noise/assets/11377562/92541319-dd42-4866-990c-9a10746002c4)
 
 
 ### Breakdown of tile_noise_generator.py
