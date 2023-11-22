@@ -2,6 +2,8 @@
 
 ### Unique hashing designed for procedural generation
 ---
+This project is a demonstration of my skills in a variety of programming paradigms. I implemented perlin noise into a procedural chunk rendering system. Perlin noise is a type of gradient noise developed by Ken Perlin. It's purpose is to create a random, but smooth image texture. It was originally designed for use in CGI but has many applications in computer graphics.
+
 
 **How to run:**
 Note: python must be installed
