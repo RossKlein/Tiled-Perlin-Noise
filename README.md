@@ -2,7 +2,7 @@
 
 ### Unique hashing designed for procedural generation
 ---
-This project is a demonstration of my skills in a variety of programming paradigms. I implemented perlin noise into a procedural chunk rendering system. Perlin noise is a type of gradient noise developed by Ken Perlin. It's purpose is to create a random, but smooth image texture. It was originally designed for use in CGI but has many applications in computer graphics. While this project would be better suited for a language with better GPU control, like C++ or even java, I wanted to experiment with the python graphics library raylib to see how powerful it was. As it turns out raylib is phenomenal, but still limited. It is not possible to do rendering optimizations like writing compute shaders and as consequence all calculations are done on the cpu. In the future I would like to use the native raylib c/c++ library instead of the python bindings.
+This project is a demonstration of my skills in a variety of programming paradigms. I implemented perlin noise into a procedural chunk rendering system. Perlin noise is a type of gradient noise developed by Ken Perlin. It's purpose is to create a random, but smooth image texture. It was originally designed for use in CGI but has many applications in computer graphics. While this project would be better suited for a language with better GPU control, like C++ or even java, I wanted to experiment with the python graphics library raylib to see how powerful it was. As it turns out raylib is phenomenal, but still limited. In the future I would like to use the native raylib c/c++ library instead of the python bindings.
 
 
 **How to run:**
