@@ -27,7 +27,7 @@ class Tile:
     intersects = False
     renderRange = False
     expired = False
-    renderBounds = (2,1)
+    renderBounds = (3,2)
     renderOutofBounds = (7,6)
     x = 0
     y = 0
