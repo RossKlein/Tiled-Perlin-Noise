@@ -9,8 +9,11 @@ This project is a demonstration of my skills in a variety of programming paradig
 Note: python must be installed
 Required python modules:
 >raylib
+>pip3 install raylib==5.5.0.2
 >numpy
+>numpy==1.26.4
 >PIL
+>pillow==10.2.0
 
 Once downloaded, navigate to the directory, open terminal, and run
 >python display.py
