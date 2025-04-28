@@ -197,14 +197,14 @@ display.init()
 updatethread = threading.Thread(target=display.update)
 loaderthread1 = threading.Thread(target=display.loader)
 loaderthread2 = threading.Thread(target=display.loader)
-loaderthread3 = threading.Thread(target=display.loader)
+# loaderthread3 = threading.Thread(target=display.loader)
 
 updatethread.daemon = True
 loaderthread1.daemon = True
 loaderthread2.daemon = True
-loaderthread3.daemon = True
+# loaderthread3.daemon = True
 updatethread.start()
 loaderthread1.start()
 loaderthread2.start()
-loaderthread3.start()
+# loaderthread3.start()
 display.main()
