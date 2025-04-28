@@ -1,4 +1,5 @@
-from pyray import *
+import pyray as pr
+import time
 import random
 import math
 import numpy as np
@@ -76,9 +77,11 @@ class Tile:
     def getTexture(self):
         return self.texture
         
-############## UNUSED CURRENTLY ##############################
+############## NOT FULLY USED CURRENTLY ##############################
+### would be used if I was periodically saving tiles to disk #########
+### since im not im just saving tiles in memory render list and regenerating ###
 class Chunk:
-    background_color= BLUE
+    background_color= pr.BLUE
     x = 0
     y= 0
     tiles = [[None],[None]]
@@ -151,10 +154,8 @@ def genGrid(tile,sqrval):#generate the grid values
 
     return grid
 
-def genGrad(sqrval, winwidth, grid, finalimg):
+def genGrad(sqrval, winwidth, grid):
     grid = np.array(grid)
-    img = ImageDraw.Draw(finalimg)
-
     gridwidth = int(winwidth/sqrval)
 
     # Create coordinate grids row major order <<<<< important
@@ -197,26 +198,28 @@ def genGrad(sqrval, winwidth, grid, finalimg):
     interp = ((lerp(interp1, interp2, v)) + 1) / 2
     interp = (interp * 255).astype(int)
 
-    # Draw the points
-    for x in range(winwidth):
-        for y in range(winwidth):
-            img.point((x, y), (interp[x, y], interp[x, y], interp[x, y], 255))
-            
+    return Image.fromarray(interp.T.astype(np.uint8), mode='L')
 
-def genChunk(xxx,yyy,sqrval,tilewidth):
-    chunk = Chunk(xxx,yyy)
-    finalimg = Image.new('RGBA',(tilewidth,tilewidth),255)
-    tile = Tile(xxx,yyy,tilewidth,finalimg)
-    
-    grid = genGrid(tile,sqrval)
-    genGrad(sqrval,tilewidth,grid,finalimg)
-
+def genChunk(xxx, yyy, sqrval, tilewidth):
+    chunk = Chunk(xxx, yyy)
+    grid = genGrid(Tile(xxx, yyy, tilewidth, None), sqrval)
+    finalimg = genGrad(sqrval, tilewidth, grid)
+    tile = Tile(xxx, yyy, tilewidth, finalimg)
     return tile
-def PILtoRayLibObj(image,res):
-    image = image.resize((res,res))
 
-    buf = io.BytesIO()
-    image.save(buf, 'png')
-    bufval = buf.getvalue()
-    image = load_image_from_memory(".png",bufval,len(bufval))
-    return image
+def PILtoRayLibObj(image,res):
+    start = time.time()
+    image = image.resize((res, res))
+    pixel_data = image.tobytes()
+    width, height = image.size
+
+    img = pr.Image(
+        pixel_data, #data
+        width, #width
+        height, #height
+        1, #mipmaps
+        pr.PIXELFORMAT_UNCOMPRESSED_GRAYSCALE  # format grayscale
+    )
+    end = time.time()
+    # print(end-start)
+    return img
