@@ -18,6 +18,7 @@ Required python modules:
 
 Once downloaded, navigate to the directory, open terminal, and run
 >pip install -r requirements.txt
+
 >python display.py
 
 Alternatively
