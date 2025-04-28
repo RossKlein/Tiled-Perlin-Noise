@@ -23,13 +23,15 @@ class Display:
         self.rendercoordlist = {}
         self.renderloadqueue = queue.Queue()
         self.renderloadset = set()
+        self.lastchunk = (-100,-100)
         self.sqrval = 4
         self.delta_time = 0
         self.MAX_TPS = 100
         self.TIME_PER_TICK = 1000000000 / self.MAX_TPS
         m.init()
         pr.init_window(1800,1000, "Perlin Noise")
-        pr.set_target_fps(120)
+        pr.set_target_fps(100)
+        # pr.set_trace_log_level(pr.LOG_WARNING)
 
         self.camera = pr.Camera2D([0,0],[0,0],0,0)
 
@@ -44,15 +46,16 @@ class Display:
             
             x = round(self.xpos)
             y = round(self.ypos)
-            n = len(self.renderlist) - 1
-            while(n >= 0):
-                tile = self.renderlist[n]
+            # n = len(self.renderlist) - 1
+            local_list = list(self.rendercoordlist.items())
+            for item in local_list:
+                (key, tile) = item
                 if tile.expired is True:
                     texture = tile.getTexture()
-                    pr.unload_texture(texture)
-                    self.renderlist.pop(n)
-                    self.rendercoordlist.pop((tile.x, tile.y))
-                    n = n-1
+                    if texture:
+                        pr.unload_texture(texture)
+                        self.rendercoordlist.pop((key[0], key[1]))
+                    pass
                 else:
                     
                     if tile.renderRange is True and tile.imageObj:
@@ -71,7 +74,7 @@ class Display:
                         if tile.intersects is True:
                             pr.draw_text(str(tile.x) + ", " + str(tile.y),xoff-x,yoff-y,40,pr.BLACK)
                             pr.draw_rectangle_lines(xoff+1-x,yoff+1-y,398,398,pr.RED)
-                    n -= 1
+                    pass
             
 
             pr.draw_circle(centerx,centery,10,pr.BLACK)
@@ -85,7 +88,7 @@ class Display:
 
     def inputHandler(self):
         #pixels per second
-        speed = 280
+        speed = 250
         if(pr.is_key_down(pr.KEY_W)):
             self.ypos = self.ypos - speed * self.delta_time
             self.setUpdateFlag()
@@ -103,61 +106,47 @@ class Display:
 
 
     def checkBounds(self): #WARNING: in update loop, cannot do graphics calls
-        intersects = 0
-        n = len(self.renderlist) - 1
+
         x = round(self.xpos // 400)
         y = round(self.ypos // 400)
-        while(n >= 0):
-            obj = self.renderlist[n]
-
+        local_list = list(self.rendercoordlist.items())
+        for item in local_list:
+            (key, obj) = item
             obj.intersects = False
 
             renderBool = obj.checkRenderBounds(x,y)
             obj.renderRange = renderBool
-
             if not obj.renderOuterBounds(x,y):
                 obj.expired = True
-            n -= 1
+            pass
 
-        if self.rendercoordlist.get((x,y)):
-            self.rendercoordlist.get((x,y)).intersects = True
-        else:
-            if  (x, y) not in self.renderloadset:
-                self.renderloadset.add((x,y))
-                self.renderloadqueue.put((x,y))
+            if self.rendercoordlist.get((x,y)):
+                self.rendercoordlist.get((x,y)).intersects = True
+        if((x,y) != self.lastchunk):
             
-            if not (self.rendercoordlist.get((x+1, y)) or (x+1, y) in self.renderloadset):
-                self.renderloadset.add((x+1,y))
-                self.renderloadqueue.put((x+1,y))
-                
-            if not (self.rendercoordlist.get((x+1, y+1)) or (x+1, y+1) in self.renderloadset):
-                self.renderloadset.add((x+1,y+1))
-                self.renderloadqueue.put((x+1,y+1))
-                
-            if not (self.rendercoordlist.get((x, y+1)) or (x, y+1) in self.renderloadset):
-                self.renderloadset.add((x,y+1))
-                self.renderloadqueue.put((x,y+1))
- 
-            if not (self.rendercoordlist.get((x-1, y)) or (x-1, y) in self.renderloadset):
-                self.renderloadset.add((x-1,y))
-                self.renderloadqueue.put((x-1,y))
-
-            if not (self.rendercoordlist.get((x-1, y-1)) or (x-1, y-1) in self.renderloadset):
-                self.renderloadset.add((x-1,y-1))
-                self.renderloadqueue.put((x-1,y-1))
-
-            if not (self.rendercoordlist.get((x, y-1)) or (x, y-1) in self.renderloadset):
-                self.renderloadset.add((x,y-1))
-                self.renderloadqueue.put((x,y-1))
-                
-
+            renderset = [
+                (x-3, y-2), (x-3, y-1), (x-3, y), (x-3, y+1), (x-3, y+2),
+                (x-2, y-2), (x-2, y-1), (x-2, y), (x-2, y+1), (x-2, y+2),
+                (x-1, y-2), (x-1, y-1), (x-1, y), (x-1, y+1), (x-1, y+2),
+                (x,   y-2), (x,   y-1), (x,   y), (x,   y+1), (x,   y+2),
+                (x+1, y-2), (x+1, y-1), (x+1, y), (x+1, y+1), (x+1, y+2),
+                (x+2, y-2), (x+2, y-1), (x+2, y), (x+2, y+1), (x+2, y+2),
+                (x+3, y-2), (x+3, y-1), (x+3, y), (x+3, y+1), (x+3, y+2),
+            ]
+            for coord in renderset:
+            
+                if not (self.rendercoordlist.get(coord) or coord in self.renderloadset):
+                    
+                    self.renderloadset.add(coord)
+                    self.renderloadqueue.put(coord)
+            
+        self.lastchunk = (x,y)
                 
     def loader(self): #specific image loading thread
         while not self.close:
             (x,y) = self.renderloadqueue.get()
             tile = m.genChunk(x,y,4,200)
             tile.getImageObj()
-            self.renderlist.append(tile)
             self.rendercoordlist[(x,y)] = tile
             self.renderloadset.discard((x,y))
             

@@ -26,7 +26,7 @@ class Tile:
     imageDim = 0
     imageObjDim = 0
     intersects = False
-    renderRange = False
+    renderRange = True #set true by default? loaded tiles should always be renderable?
     expired = False
     renderBounds = (3,2)
     renderOutofBounds = (7,6)
