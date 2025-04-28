@@ -26,6 +26,7 @@ Alternatively
 
 Once open the WASD keys will move a small dot around the screen.
 You can also press SPACE to view a smaller render window.
+SHIFT for a speed boost
 ## Watch the demo!!!
 ![see demo](https://github.com/RossKlein/Tiled-Perlin-Noise/assets/11377562/92541319-dd42-4866-990c-9a10746002c4)
 
