@@ -28,7 +28,7 @@ class Tile:
     intersects = False
     renderRange = True #set true by default? loaded tiles should always be renderable?
     expired = False
-    renderBounds = (3,2)
+    # renderBounds = (3,2)
     renderOutofBounds = (7,6)
     x = 0
     y = 0
@@ -59,9 +59,9 @@ class Tile:
                 
                 return True
         return False
-    def checkRenderBounds(self, x, y):
-        if (x >= self.x-self.renderBounds[0]) and (x <= self.x + 1 + self.renderBounds[0]):
-            if(y >= self.y-self.renderBounds[1]) and ( y <= self.y + 1 + self.renderBounds[1]):
+    def checkRenderBounds(self, x, y, renderBounds):
+        if (x >= self.x-renderBounds[0]) and (x <= self.x +  renderBounds[0] + 1):
+            if(y >= self.y-renderBounds[1]) and ( y <= self.y + renderBounds[1] + 1):
 
                 return True
         return False

@@ -16,6 +16,7 @@ class Display:
         pass
     def init(self):
         self.close = False
+        self.SMALL_RENDER = False
         self.xpos = 0
         self.ypos = 0
         self.updateFlag = True
@@ -23,6 +24,7 @@ class Display:
         self.rendercoordlist = {}
         self.renderloadqueue = queue.Queue()
         self.renderloadset = set()
+        self.renderbounds = (3,2)
         self.lastchunk = (-100,-100)
         self.sqrval = 4
         self.delta_time = 0
@@ -31,7 +33,11 @@ class Display:
         m.init()
         pr.init_window(1800,1000, "Perlin Noise")
         pr.set_target_fps(100)
-        # pr.set_trace_log_level(pr.LOG_WARNING)
+        pr.set_trace_log_level(pr.LOG_WARNING)
+        
+        
+        #input toggle tracking
+        self.space_pressed_last_frame = False
 
         self.camera = pr.Camera2D([0,0],[0,0],0,0)
 
@@ -103,18 +109,30 @@ class Display:
         if(pr.is_key_down(pr.KEY_D)):
             self.xpos = self.xpos + speed * self.delta_time
             self.setUpdateFlag()
+       
+        current_space_pressed = pr.is_key_down(pr.KEY_SPACE)
+        if( self.space_pressed_last_frame and not current_space_pressed):
+            self.SMALL_RENDER = not self.SMALL_RENDER
+            self.setUpdateFlag()
+        self.space_pressed_last_frame = current_space_pressed
+            
 
 
     def checkBounds(self): #WARNING: in update loop, cannot do graphics calls
 
         x = round(self.xpos // 400)
         y = round(self.ypos // 400)
+        
+        if(self.SMALL_RENDER):
+            self.renderbounds = (0,0)
+        else:
+            self.renderbounds = (3,2)
         local_list = list(self.rendercoordlist.items())
         for item in local_list:
             (key, obj) = item
             obj.intersects = False
 
-            renderBool = obj.checkRenderBounds(x,y)
+            renderBool = obj.checkRenderBounds(x,y, self.renderbounds)
             obj.renderRange = renderBool
             if not obj.renderOuterBounds(x,y):
                 obj.expired = True
@@ -133,6 +151,7 @@ class Display:
                 (x+2, y-2), (x+2, y-1), (x+2, y), (x+2, y+1), (x+2, y+2),
                 (x+3, y-2), (x+3, y-1), (x+3, y), (x+3, y+1), (x+3, y+2),
             ]
+
             for coord in renderset:
             
                 if not (self.rendercoordlist.get(coord) or coord in self.renderloadset):
