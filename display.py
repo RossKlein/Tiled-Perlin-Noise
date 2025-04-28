@@ -35,7 +35,7 @@ class Display:
         pr.set_target_fps(100)
         pr.set_trace_log_level(pr.LOG_WARNING)
         
-        
+        self.speed = 250 #px/s
         #input toggle tracking
         self.space_pressed_last_frame = False
 
@@ -94,22 +94,27 @@ class Display:
 
     def inputHandler(self):
         #pixels per second
-        speed = 250
         if(pr.is_key_down(pr.KEY_W)):
-            self.ypos = self.ypos - speed * self.delta_time
+            self.ypos = self.ypos - self.speed * self.delta_time
             self.setUpdateFlag()
         if(pr.is_key_down(pr.KEY_A)):
-            self.xpos = self.xpos - speed * self.delta_time
+            self.xpos = self.xpos - self.speed * self.delta_time
             self.setUpdateFlag()
 
         if(pr.is_key_down(pr.KEY_S)):
-            self.ypos = self.ypos + speed * self.delta_time
+            self.ypos = self.ypos + self.speed * self.delta_time
             self.setUpdateFlag()
 
         if(pr.is_key_down(pr.KEY_D)):
-            self.xpos = self.xpos + speed * self.delta_time
+            self.xpos = self.xpos + self.speed * self.delta_time
             self.setUpdateFlag()
        
+        if(pr.is_key_down(pr.KEY_LEFT_SHIFT)):
+            self.speed = 500
+            self.setUpdateFlag()
+        else:
+            self.speed = 250
+            
         current_space_pressed = pr.is_key_down(pr.KEY_SPACE)
         if( self.space_pressed_last_frame and not current_space_pressed):
             self.SMALL_RENDER = not self.SMALL_RENDER
